@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Longest Increasing Path in a Matrix — Interview Walkthrough</title>
+<style>
+:root{--bg:#0b0e14;--card:#131824;--line:#252d3f;--tx:#e6eaf2;--mu:#98a3b8;--ac:#6ea8fe;--ok:#4ade80;--wa:#fbbf24;--bad:#f87171;--pk:#e879f9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:56px;height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:#0b0e14ee;border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding:8px 12px;backdrop-filter:blur(6px)}
+nav a{color:var(--mu);text-decoration:none;font-size:13px;padding:4px 10px;border-radius:99px;white-space:nowrap}nav a:hover,nav a:focus{background:var(--card);color:var(--tx)}
+main{max-width:980px;margin:0 auto;padding:16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
+h1{font-size:clamp(26px,5vw,40px);line-height:1.2;margin:24px 0 8px}h2{margin:0 0 4px;font-size:22px}h3{font-size:16px;margin:18px 0 6px;color:var(--ac)}
+.tag{color:var(--ac);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+p{margin:8px 0}.mu{color:var(--mu)}.say{border-left:3px solid var(--ac);padding:4px 14px;color:#cfe0ff;font-style:italic}
+button{background:#1c2335;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;min-height:40px}
+button:hover{border-color:var(--ac)}button:focus-visible,.cell:focus-visible,summary:focus-visible{outline:2px solid var(--ac)}button.on{background:var(--ac);color:#0b0e14}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.two{grid-template-columns:1fr}}
+.grid{display:inline-grid;grid-template-columns:repeat(3,64px);gap:6px}
+.cell{width:64px;height:64px;border-radius:12px;background:#1c2335;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--tx);position:relative;padding:0;transition:.25s}
+.cell small{position:absolute;bottom:2px;right:6px;font-size:11px;font-weight:600;color:var(--mu)}
+.cell.path{background:#14351f;border-color:var(--ok)}.cell.cur{border-color:var(--ac);background:#16284a;animation:pl 1.2s infinite}.cell.ok{border-color:var(--ok);background:#14351f}.cell.bad{opacity:.45}.cell.diag{opacity:.25;text-decoration:line-through}.cell.red{border-color:var(--bad);background:#3a1717}.cell.sel{box-shadow:0 0 0 3px var(--pk)}.cell.par{border-color:var(--wa)}
+@keyframes pl{50%{box-shadow:0 0 0 6px #6ea8fe44}}
+pre{background:#0a0d14;border:1px solid var(--line);border-radius:12px;padding:12px 0;overflow-x:auto;margin:8px 0;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace}
+.ln{padding:0 14px;white-space:pre;border-left:3px solid transparent}.ln.hl{background:#6ea8fe22;border-left-color:var(--ac)}
+pre b{color:#c792ea;font-weight:400}pre u{color:#f78c6c;text-decoration:none}pre i{color:#6b778f}
+.info{background:#0a0d14;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:13px/1.6 ui-monospace,Menlo,monospace;min-height:120px;white-space:pre-wrap}
+.ban{min-height:26px;font-weight:700;color:var(--pk)}.hit{color:var(--wa)}
+.tree{overflow:auto;background:#0a0d14;border:1px solid var(--line);border-radius:12px;max-height:420px}
+svg text{font:11px ui-monospace,Menlo,monospace;fill:var(--tx)}
+.nd rect{fill:#1c2335;stroke:var(--line);stroke-width:2}.nd.done rect{stroke:var(--ok)}.nd.cur rect{stroke:var(--ac);fill:#16284a}.nd.hit rect{stroke:var(--wa);stroke-dasharray:4 3}.nd.same rect{stroke:var(--pk);stroke-width:3}.nd.pop{animation:pp .5s}
+@keyframes pp{50%{transform:scale(1.15)}}.nd{transform-box:fill-box;transform-origin:center;cursor:pointer}
+.ed{stroke:#4a5873;stroke-width:1.5;fill:none}.ed.cur{stroke:var(--ac);stroke-width:2.5}
+.leg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mu)}.leg span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--c)}
+details{border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:8px 0;background:#0f1420}summary{cursor:pointer;font-weight:600}
+.big{background:linear-gradient(135deg,#16284a,#1b1633);border:1px solid var(--ac);border-radius:14px;padding:18px;font-size:17px}
+.flow{display:flex;flex-direction:column;align-items:center;gap:2px}.flow div{background:#1c2335;border:1px solid var(--line);border-radius:10px;padding:6px 16px;font-size:14px}.flow span{color:var(--ac)}
+.dp{display:inline-grid;grid-template-columns:repeat(3,52px);gap:5px}.dp div{height:44px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--mu)}.dp .f{color:var(--ok);border-color:var(--ok)}.dp .n{animation:pl 1s}
+@media(max-width:420px){.grid{grid-template-columns:repeat(3,56px)}.cell{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<nav><a href="#hook">Hook</a><a href="#q">Question</a><a href="#think">Think</a><a href="#rec">Recursion</a><a href="#run">Dry run</a><a href="#memo">Memoize</a><a href="#code">Code</a><a href="#cx">Complexity</a><a href="#qa">Interviewer</a><a href="#say">30-sec</a></nav>
+<main>
+<section id="hook"><div class="tag">Interview session</div><h1>Longest Increasing Path in a Matrix</h1>
+<p class="say">Suppose you're sitting in an interview and the interviewer gives you a DSA question you've never solved before. How do you approach it?</p>
+<p>Let's solve this one together. No jumping to "it's DP" — each observation should make the next one obvious.</p></section>
+
+<section id="q"><div class="tag">1 · The question</div><h2>What are we asked?</h2>
+<p>Given an <b>n × m</b> matrix, find the length of the longest path where every next value is <b>strictly greater</b>, moving only <b>up / down / left / right</b>, staying inside the matrix. Diagonals are not allowed.</p>
+<div class="two"><div><div id="g1"></div>
+<div class="row"><button id="bpath">Show 1→2→3→6→9</button><button id="bbad">Try 3 → 4</button></div></div>
+<div class="info" id="i1">Press a button.</div></div></section>
+
+<section id="think"><div class="tag">2 · First observations</div><h2>What are we actually looking for?</h2>
+<p>The <b>longest among all valid increasing paths</b>. Many valid paths can exist, so stopping at the first one proves nothing — we must consider the options and keep the maximum.</p>
+<h3>Click a cell: where can we move from here?</h3>
+<div class="two"><div id="g2"></div><div class="info" id="i2"></div></div>
+<p class="mu">For each neighbor we ask: <b>inside the matrix?</b> AND <b>value greater than current?</b> Only then can we move.</p>
+<h3>Where does the path start?</h3>
+<p>We don't know — so try every cell as a start.</p>
+<div class="two"><div><div id="g3"></div><div class="row"><button id="bst">▶ Animate starts</button></div></div>
+<div class="info" id="i3">Start at (0,0)…</div></div>
+<p><b>Why not only (0,0)?</b> Take row <code>5 1 2 3</code>: from 5 no neighbor is greater (length 1), but starting at the 1 gives 1→2→3 = 3. The best path can start anywhere — not necessarily the minimum, not necessarily the corner.</p>
+<h3>Why explore several options?</h3>
+<p>From a cell <code>6</code> with greater neighbors <code>7</code> and <code>8</code>, we can't pick one blindly. Even "pick the largest neighbor" fails: in <code>[[1,9],[2,3]]</code> greedy goes 1→9 (length 2), but 1→2→3→9 has length 4. We must try <b>both</b> and take the <b>max</b>. Trying all choices from the same kind of subproblem — that's recursion.</p></section>
+
+<section id="rec"><div class="tag">3 · Recursion</div><h2>Define find(i, j)</h2>
+<div class="big"><b>find(i,j)</b> = longest increasing path <b>starting at</b> cell (i,j).<br>
+find(i,j) = 1 + max( find(v) for every valid greater neighbor v ), and = <b>1</b> if there is none.</div>
+<p class="mu">Base case is "no valid greater neighbor ⇒ 1" — the cell alone is a path. Bounds are checked <i>before</i> each call, so no <code>i>=n && j>=m</code> base case is needed (that condition would be wrong anyway).</p>
+<h3>Build the code step by step</h3>
+<div class="row"><button id="bp">← Prev</button><button id="bn">Next →</button><span id="bl" class="mu"></span></div>
+<pre id="cb"></pre><p id="bt"></p></section>
+
+<section id="run"><div class="tag">4 · Dry run</div><h2>Run it on 1…9 and watch the tree</h2>
+<p>Every tree node is a real call; every edge is a valid adjacent, strictly-greater move. Order of checks: right, left, down, up. Click a node or a matrix cell to find calls to the same cell.</p>
+<div class="row"><button id="m0" class="on">Plain recursion</button><button id="m1">With memoization</button></div>
+<div class="row"><button id="pv">← Previous</button><button id="nx">Next →</button><button id="pl">▶ Play</button><button id="pa">⏸ Pause</button><button id="rs">↻ Reset</button><span id="sc" class="mu"></span></div>
+<div class="leg"><span style="--c:var(--ac)">Current call</span><span style="--c:var(--ok)">Returned</span><span style="--c:var(--wa)">Cache hit</span><span style="--c:var(--pk)">Same state</span><span style="--c:var(--line)">Edge = move to next cell</span></div>
+<div class="ban" id="bn2"></div>
+<div class="tree" id="tr"></div>
+<div class="two" style="margin-top:12px"><div><div id="g4"></div><div id="dpw"></div></div><div class="info" id="i4"></div></div>
+<pre id="rc"></pre></section>
+
+<section id="memo"><div class="tag">5 · Overlap → memoization</div><h2>Same cell, same answer</h2>
+<p>Run the plain version to the end: <code>find(1,1)</code> appears twice (via (0,1) and via (1,0)), and <code>find(2,2)</code> six times. Two different paths reached the same cell. <b>Does the answer from that cell depend on how we got there? No.</b> Once standing at (i,j), the future choices are identical.</p>
+<div class="big"><b>The path used to reach a cell doesn't affect the answer from that cell.</b><br>So the state is just <b>(i, j)</b>, and dp[i][j] = longest increasing path starting at (i,j).</div>
+<p>Switch the dry run to <b>With memoization</b>: the repeated subtrees disappear — a <span class="hit">CACHE HIT</span> returns immediately. Final dp for 1…9 is <code>5 4 3 / 4 3 2 / 3 2 1</code>: calculate once, store once, reuse later.</p></section>
+
+<section id="code"><div class="tag">6 · Final code</div><h2>Interview-ready C++</h2>
+<div class="row"><button id="c0">Recursive</button><button id="c1" class="on">Memoized</button></div><pre id="fc"></pre></section>
+
+<section id="cx"><div class="tag">7 · Complexity</div><h2>O(n·m) time</h2>
+<p>There are <b>n×m</b> states; each is computed once and inspects ≤ 4 neighbors ⇒ <b>Time O(n·m)</b>. Space: dp table O(n·m) + recursion stack up to O(n·m) in the worst case (a snake-like increasing path) ⇒ <b>auxiliary O(n·m)</b>. Plain recursion without memo is exponential in the worst case.</p>
+<h3>Do we need a visited array?</h3>
+<p>No. Every move needs <code>next &gt; current</code>, so values strictly increase along any path. Returning to an earlier cell would require its value to be greater than itself — impossible. Cycles can't exist, so no visited array or backtracking is needed. (This is recursion + memoization, not backtracking, and not tabulation.)</p></section>
+
+<section id="qa"><div class="tag">8 · Interviewer may ask…</div><h2>Tap to reveal</h2><div id="qs"></div>
+<h3>Common wrong approaches</h3><div id="ms"></div></section>
+
+<section id="say"><div class="tag">9 · Say it in 30 seconds</div>
+<div class="big">"I'll treat every cell as a possible start. From a cell I explore its four neighbors and only move to one that's strictly greater. Since several choices can exist, I recursively explore all and take the maximum length. The same cell can be reached by different paths, but the longest path starting from it is always the same, so I memoize per (i,j). That's n·m states with 4 checks each: O(n·m) time and O(n·m) auxiliary space for the dp table and recursion stack."</div>
+<h3>Mental model</h3><div class="flow" id="fl"></div>
+<p style="text-align:center;font-size:20px;font-weight:700;margin-top:16px">Don't memorize the algorithm. Follow the observations.</p></section>
+</main>
+<script>
+const $=id=>document.getElementById(id),M=[[1,2,3],[4,5,6],[7,8,9]],N=3,D=[[0,1,'right'],[0,-1,'left'],[1,0,'down'],[-1,0,'up']];
+const E=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const hi=s=>E(s).replace(/\b(int|if|return|vector|max|for)\b/g,'<b>$1</b>').replace(/\b(\d+)\b/g,'<u>$1</u>');
+const lh=s=>{const[c,...r]=s.split('//');return hi(c)+(r.length?'<i>//'+E(r.join('//'))+'</i>':'')};
+function drawGrid(el,fn,click,sub){el.innerHTML='<div class="grid">'+M.map((r,i)=>r.map((v,j)=>`<button class="cell ${fn(i,j)||''}" data-i="${i}" data-j="${j}" aria-label="cell ${i},${j} value ${v}">${v}<small>${i},${j}</small></button>`).join('')).join('')+'</div>';
+ if(click)el.querySelectorAll('.cell').forEach(b=>b.onclick=()=>click(+b.dataset.i,+b.dataset.j))}
+function codeLines(memo){const L=[],p=(k,s)=>L.push({k,s});
+ p('sig','int find(vector<vector<int>>& a, int n, int m, int i, int j'+(memo?', vector<vector<int>>& dp':'')+') {');
+ if(memo)p('cache','  if (dp[i][j] != -1) return dp[i][j];  // already solved');
+ p('ans','  int ans = 1;  // current cell alone');
+ [['right','j+1 < m','a[i][j+1]','i, j+1'],['left','j-1 >= 0','a[i][j-1]','i, j-1'],['down','i+1 < n','a[i+1][j]','i+1, j'],['up','i-1 >= 0','a[i-1][j]','i-1, j']].forEach(d=>{
+  p(d[0],`  if (${d[1]} && ${d[2]} > a[i][j])  // ${d[0]}`);p(d[0],`    ans = max(ans, 1 + find(a, n, m, ${d[3]}${memo?', dp':''}));`)});
+ p('ret',memo?'  return dp[i][j] = ans;':'  return ans;');p('close','}');return L}
+function drawCode(el,L,hl){el.innerHTML=L.map(l=>`<div class="ln${l.k&&l.k===hl?' hl':''}">${lh(l.s)||' '}</div>`).join('')}
+/* 1 question */
+const P=[[0,0],[0,1],[0,2],[1,2],[2,2]];
+function g1(mode){drawGrid($('g1'),(i,j)=>mode==='p'&&P.some(q=>q[0]==i&&q[1]==j)?'path':mode==='b'&&((i==0&&j==2)||(i==1&&j==0))?'red':'')}
+g1();$('bpath').onclick=()=>{g1('p');$('i1').textContent='1 → 2 → 3 → 6 → 9\n2>1  3>2  6>3  9>6  ✓ each step adjacent\nLongest Path Length = 5'};
+$('bbad').onclick=()=>{g1('b');$('i1').textContent='3 → 4 ✗\n4 > 3, but (0,2) and (1,0) are not adjacent.\nA move must be up/down/left/right by one cell.'};
+/* 2 explorer */
+function g2(s){const[si,sj]=s;drawGrid($('g2'),(i,j)=>{if(i==si&&j==sj)return'cur';if(Math.abs(i-si)==1&&Math.abs(j-sj)==1)return'diag';if(Math.abs(i-si)+Math.abs(j-sj)==1)return M[i][j]>M[si][sj]?'ok':'bad';return'bad'},(i,j)=>g2([i,j]));
+ let t=`Cell (${si},${sj}) value ${M[si][sj]}\n`;D.forEach(d=>{const x=si+d[0],y=sj+d[1];t+=(x<0||y<0||x>=N||y>=N)?`${d[2].padEnd(5)}: outside matrix ✗\n`:`${d[2].padEnd(5)}: (${x},${y}) = ${M[x][y]}, ${M[x][y]}>${M[si][sj]}? ${M[x][y]>M[si][sj]?'yes ✓ can move':'no ✗'}\n`});
+ $('i2').textContent=t+'diagonals: never allowed (faded)'}
+g2([1,1]);
+let st=null;$('bst').onclick=()=>{if(st){clearInterval(st);st=null;$('bst').textContent='▶ Animate starts';return}let k=0;$('bst').textContent='⏸ Stop';st=setInterval(()=>{const i=Math.floor(k/3)%3,j=k%3;drawGrid($('g3'),(a,b)=>a==i&&b==j?'cur':'');$('i3').textContent=`Start at (${i},${j})\nrun find(${i},${j}), keep the max`;k=(k+1)%9},700)};
+drawGrid($('g3'),()=>'');
+/* 3 build */
+const ord=['sig','ans','right','left','down','up','ret'],BT=['Signature: find(i,j) is the longest increasing path starting at (i,j). a is the matrix, n×m its size.','ans = 1: the cell itself is already a path of length 1 — also the answer when no neighbor is greater.','Right: j+1 < m stops us leaving the matrix; a[i][j+1] > a[i][j] enforces strict increase. In 1 + find(...) the 1 counts the current cell, find(...) counts the path from the neighbor.','Left: same two checks. j-1 >= 0 guards the left edge.','Down: i+1 < n guards the bottom edge.','Up: i-1 >= 0 guards the top edge. Four independent choices — we take the max over the valid ones.','return ans: the best of all choices (max), or 1 if none was valid.','Memoization step 1: dp[i][j] = longest path starting at (i,j), -1 means not computed (dp starts as n×m of -1). If solved, return it.','Memoization step 2: store before returning — calculate once, store once, reuse later.'];
+let bs=0;function drawB(){const L=bs<7?codeLines(false).filter(l=>ord.indexOf(l.k)<=bs||(l.k==='close'&&bs==6)):codeLines(true);drawCode($('cb'),L,bs<7?ord[bs]:bs==7?'cache':'ret');$('bt').textContent=BT[bs];$('bl').textContent=`Step ${bs+1} / 9`}
+$('bp').onclick=()=>{bs=Math.max(0,bs-1);drawB()};$('bn').onclick=()=>{bs=Math.min(8,bs+1);drawB()};drawB();
+/* 4 dry run */
+let memo=false,T,k=0,sel=null,timer=null;
+function build(m){let id=0;const dp=M.map(r=>r.map(()=>-1)),ev=[];
+ function f(i,j,par,dir){const n={id:id++,i,j,par,dir,ch:[],ret:null,hit:false};ev.push({t:'call',n});
+  if(m&&dp[i][j]!=-1){n.hit=true;n.ret=dp[i][j];ev.push({t:'hit',n});return n}
+  let a=1;for(const d of D){const x=i+d[0],y=j+d[1];if(x>=0&&x<N&&y>=0&&y<N&&M[x][y]>M[i][j]){const c=f(x,y,n,d[2]);n.ch.push(c);a=Math.max(a,1+c.ret)}}
+  n.ret=a;if(m)dp[i][j]=a;ev.push({t:'ret',n,dp:m?dp.map(r=>r.slice()):null});return n}
+ const root=f(0,0,null,null);let leaf=0,all=[];
+ (function lay(n,d){n.d=d;all.push(n);if(!n.ch.length)n.x=leaf++;else{n.ch.forEach(c=>lay(c,d+1));n.x=(n.ch[0].x+n.ch[n.ch.length-1].x)/2}})(root,0);
+ return{root,ev,all,leaf}}
+function setMode(m){memo=m;$('m0').classList.toggle('on',!m);$('m1').classList.toggle('on',m);T=build(m);k=0;sel=null;stop();draw()}
+function stop(){if(timer){clearInterval(timer);timer=null}}
+function draw(auto){const ev=T.ev,vis=new Set(),done=new Set();let dpv=M.map(r=>r.map(()=>-1)),calls=0;
+ for(let x=0;x<k;x++){const e=ev[x];if(e.t==='call'){vis.add(e.n.id);calls++}else done.add(e.n.id);if(e.t==='ret'&&e.dp)dpv=e.dp}
+ const cur=k?ev[k-1]:null,cn=cur&&cur.n;
+ if(auto&&cur&&cur.t==='call'&&T.all.some(n=>n!==cn&&vis.has(n.id)&&n.i==cn.i&&n.j==cn.j))sel=[cn.i,cn.j];
+ const SX=74,SY=74,W=T.leaf*SX+30,H=(Math.max(...T.all.map(n=>n.d))+1)*SY+10;let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+ const px=n=>n.x*SX+42,py=n=>n.d*SY+30;
+ T.all.filter(n=>vis.has(n.id)&&n.par).forEach(n=>{s+=`<path class="ed${cn===n?' cur':''}" d="M${px(n.par)} ${py(n.par)+20}L${px(n)} ${py(n)-20}"/>`});
+ T.all.filter(n=>vis.has(n.id)).forEach(n=>{const same=sel&&sel[0]==n.i&&sel[1]==n.j;
+  const c=['nd',done.has(n.id)?'done':'',cn===n?'cur':'',n.hit?'hit':'',same?'same':'',cn===n&&cur.t==='ret'?'pop':''].join(' ');
+  s+=`<g class="${c}" data-id="${n.id}" transform="translate(${px(n)-31} ${py(n)-20})"><rect width="62" height="40" rx="8"/><text x="31" y="16" text-anchor="middle">f(${n.i},${n.j}) v=${M[n.i][n.j]}</text><text x="31" y="32" text-anchor="middle">${done.has(n.id)?(n.hit?'HIT → ':'→ ')+n.ret:'…'}</text></g>`});
+ $('tr').innerHTML=s+'</svg>';
+ $('tr').querySelectorAll('.nd').forEach(g=>g.onclick=()=>{const n=T.all[+g.dataset.id];sel=[n.i,n.j];draw()});
+ drawGrid($('g4'),(i,j)=>(cn&&cn.i==i&&cn.j==j?'cur ':'')+(cn&&cn.par&&cn.par.i==i&&cn.par.j==j&&cur.t==='call'?'par ':'')+(sel&&sel[0]==i&&sel[1]==j?'sel':''),(i,j)=>{sel=[i,j];draw()});
+ $('dpw').innerHTML=memo?'<p class="mu" style="margin:8px 0 4px">dp table (-1 = not computed)</p><div class="dp">'+dpv.map((r,i)=>r.map((v,j)=>`<div class="${v>=0?'f':''}${cur&&cur.t==='ret'&&cn.i==i&&cn.j==j?' n':''}">${v}</div>`).join('')).join('')+'</div>':'';
+ let t='Press Next to start. The outer loop begins with find(0,0).';
+ if(cur){const n=cn,v=M[n.i][n.j];
+  if(cur.t==='call')t=n.par?`Current:\nfind(${n.par.i},${n.par.j})  value ${M[n.par.i][n.par.j]}\nTrying:\n(${n.i},${n.j})  ${n.dir}\nWhy:\n${v} > ${M[n.par.i][n.par.j]} and it's adjacent\nAction:\nRecursive call find(${n.i},${n.j})`:`Outer loop: start at (0,0)\nCall find(0,0), value 1`;
+  else if(cur.t==='hit')t=`find(${n.i},${n.j}) was already solved\nCACHE HIT: dp[${n.i}][${n.j}] = ${n.ret}\nReturn immediately — no subtree`;
+  else t=`find(${n.i},${n.j}) value ${v} returns ${n.ret}\n`+(n.ch.length?`= 1 + max(${n.ch.map(c=>c.ret).join(', ')})`+(memo?`\nStore dp[${n.i}][${n.j}] = ${n.ret}`:''):`no greater neighbor ⇒ 1`)}
+ $('i4').textContent=t+`\n\nCalls so far: ${calls}`+(k==ev.length?`\nFinished. find(0,0) = ${T.root.ret}. (Full answer = max over all starts = 5)`:'');
+ const same=sel&&T.all.filter(n=>vis.has(n.id)&&n.i==sel[0]&&n.j==sel[1]).length;
+ $('bn2').innerHTML=cur&&cur.t==='hit'?'<span class="hit">CACHE HIT</span>':same>1?`SAME STATE ×${same}: find(${sel[0]},${sel[1]}) reached via different paths`:'';
+ $('sc').textContent=`Step ${k} / ${ev.length}`;
+ drawCode($('rc'),codeLines(memo),!cur?null:cur.t==='hit'?'cache':cur.t==='ret'?'ret':cn.par?cn.dir:'sig')}
+const go=d=>{k=Math.max(0,Math.min(T.ev.length,k+d));sel=null;draw(d>0)};
+$('nx').onclick=()=>{stop();go(1)};$('pv').onclick=()=>{stop();go(-1)};$('rs').onclick=()=>{stop();k=0;sel=null;draw()};$('pa').onclick=stop;
+$('pl').onclick=()=>{stop();if(k>=T.ev.length)k=0;timer=setInterval(()=>{if(k>=T.ev.length)return stop();go(1)},900)};
+$('m0').onclick=()=>setMode(false);$('m1').onclick=()=>setMode(true);setMode(false);
+/* code */
+function fullCode(m){const L=codeLines(m),dr=['','int longIncPath(vector<vector<int>>& a, int n, int m) {'];if(m)dr.push('  vector<vector<int>> dp(n, vector<int>(m, -1));');
+ dr.push('  int ans = 0;','  for (int i = 0; i < n; i++)','    for (int j = 0; j < m; j++)  // any cell can start','      ans = max(ans, find(a, n, m, i, j'+(m?', dp':'')+'));','  return ans;','}');return L.concat(dr.map(s=>({k:'',s})))}
+function setC(m){$('c0').classList.toggle('on',!m);$('c1').classList.toggle('on',m);drawCode($('fc'),fullCode(m))}
+$('c0').onclick=()=>setC(false);$('c1').onclick=()=>setC(true);setC(true);
+/* Q&A */
+const QA=[['Why can\'t we start only from (0,0)?','The longest path can begin at any cell; (0,0) may even be a dead end. We try every cell as a start.'],['Why not greedily pick the largest neighbor?','A big neighbor can be a dead end. In [[1,9],[2,3]], greedy gives 1→9 (2) but 1→2→3→9 is 4.'],['Why explore multiple directions?','Several greater neighbors may exist and we want the longest, so we explore all and take the max.'],['What does find(i,j) represent?','The length of the longest strictly increasing path starting at (i,j).'],['Why is the base answer 1?','The cell alone is a path of length 1; this is the result when no neighbor is valid.'],['Why does memoization work?','The answer from (i,j) depends only on (i,j), not on how we reached it.'],['What is the overlapping subproblem?','Different paths reaching the same cell, e.g. find(1,1) reached via (0,1) and via (1,0) — same subtree recomputed.'],['What is the DP state?','(i,j): dp[i][j] = longest increasing path starting at (i,j).'],['Time complexity?','O(n·m): n·m states, each computed once with ≤ 4 neighbor checks.'],['Do we need a visited array?','No. Values strictly increase along a path, so a cycle would need a value greater than itself.']];
+$('qs').innerHTML=QA.map((q,i)=>`<details><summary>Q${i+1}. ${E(q[0])}</summary><p>${E(q[1])}</p></details>`).join('');
+const MS=[['Starting only from (0,0)','Misses paths starting elsewhere. Loop over all cells.'],['Choosing only the largest valid neighbor','Greedy: a larger neighbor may lead to a shorter path. Try all valid neighbors.'],['Base case if(i>=n && j>=m)','Wrong: it needs both to be out of range, and we already bounds-check before each call. The real base is "no greater neighbor ⇒ 1".'],['Forgetting the +1','The current cell counts. Without 1 + find(...) you under-count by one per step.'],['Returning the first valid path','The goal is the maximum, so all choices must be considered.'],['Recalculating every state','Same (i,j) is solved repeatedly (exponential time). Memoization solves each once.']];
+$('ms').innerHTML=MS.map((q,i)=>`<details><summary>Mistake ${i+1}: ${E(q[0])}</summary><p>${E(q[1])}</p></details>`).join('');
+$('fl').innerHTML=['LONGEST PATH','Try every starting cell','4 directions, only greater neighbors','Multiple choices → explore all (recursion)','Same cell reached again → same answer','Store it (memoization)','O(n × m)'].map((s,i,a)=>`<div>${s}</div>${i<a.length-1?'<span>↓</span>':''}`).join('');
+</script></body></html>
